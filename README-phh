@@ -1,3 +1,15 @@
+Install AKA challenge forwarder:
+Compile and install https://github.com/phhusson/SimServerAndroid:
+> ./gradlew assembleDebug
+> adb install -r ./app/build/outputs/apk/debug/app-debug.apk
+> adb push runsimserver.sh /data/local/tmp/
+> adb shell chmod 0755 /data/local/tmp/runsimserver.sh
+
+Ensure it worked:
+> adb shell su 1000 /data/local/tmp/runsimserver.sh imsi
+This should report your SIM card's IMSI
+
+(obviously replace mcc 208 mnc 020 by your own carrier everywhere)
 Setup VoWifi tunnel with sudo python3 swu_emulator.py -m http://192.168.1.254:8000 -a ims -d epdg.epc.mnc020.mcc208.pub.3gppnetwork.org -M 208 -N 020 --netns epdg
 Then launch doubango ims with:
 sudo ip netns exec epdg ip xfrm policy deleteall
@@ -8,3 +20,7 @@ Once inside `demo`, do:
 ++run # This will simply initialize stuff and sockets, but not actually connect
 ++register # This will connect to SIP, set up IPSec transport (Note: swu_emulator sets up an ipsec tunnel. SIP sets up another IPSec transport inside that ipsec tunnel)
 ++subscribe # To start receiving events
+
+
+Known tweaks that might be needed depending on the operator:
+- customize swu_emulator.py's sa_list/sa_list_child
