@@ -1,0 +1,10 @@
+Setup VoWifi tunnel with sudo python3 swu_emulator.py -m http://192.168.1.254:8000 -a ims -d epdg.epc.mnc020.mcc208.pub.3gppnetwork.org -M 208 -N 020 --netns epdg
+Then launch doubango ims with:
+sudo ip netns exec epdg ip xfrm policy deleteall
+sudo ip netns exec epdg ip xfrm state deleteall
+sudo ip netns exec epdg ./demo ++config-stack --realm ims.mnc020.mcc208.3gppnetwork.org --impi <imsi (no prepending 0)>@ims.mnc020.mcc208.3gppnetwork.org --impu sip:imsi@ims.mnc020.mcc208.3gppnetwork.org --pcscf-ip <pcscf ip as reported by swu_emulator> --ipv6 --header 'User-Agent=Xiaomi__Android_12_MIUI220114'
+
+Once inside `demo`, do:
+++run # This will simply initialize stuff and sockets, but not actually connect
+++register # This will connect to SIP, set up IPSec transport (Note: swu_emulator sets up an ipsec tunnel. SIP sets up another IPSec transport inside that ipsec tunnel)
+++subscribe # To start receiving events
