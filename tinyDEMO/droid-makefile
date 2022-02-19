@@ -1,9 +1,27 @@
 APP := demo
 
-FFMPEG_LDFLAGS := -L../thirdparties/android/lib -lavutil -lswscale -lavcodec -lgcc
+#FFMPEG_LDFLAGS := -L../thirdparties/android/lib -lavutil -lswscale -lavcodec -lgcc
 
-CFLAGS := $(CFLAGS_COMMON) -I../tinySAK/src -I../tinyNET/src -I../tinySMS/include -I../tinyHTTP/include -I../tinySDP/include -I../tinyDAV/include -I../tinyMEDIA/include -I../tinySIP/include
-LDFLAGS := $(LDFLAGS_COMMON) -Wl,-Bsymbolic,--whole-archive  -Wl,--entry=main -lm $(FFMPEG_LDFLAGS) -ltinySAK -ltinyNET -ltinyHTTP -ltinyIPSec -ltinySMS -ltinySDP -ltinyMEDIA -ltinyDAV -ltinySIP
+CFLAGS := $(CFLAGS_COMMON) -I../tinySAK/src -I../tinyNET/src -I../tinySMS/include -I../tinyHTTP/include -I../tinySDP/include -I../tinyDAV/include -I../tinyMEDIA/include -I../tinySIP/include -I../tinyMSRP/include
+LDFLAGS :=  -lm -ltinySAK -ltinyNET -ltinyHTTP -ltinyIPSec -ltinySMS -ltinySDP -ltinyMEDIA -ltinyDAV -ltinySIP
+LDFLAGS += -Wl,-rpath,../tinySAK/.libs \
+    -L../tinySAK/.libs \
+    -Wl,-rpath,../tinyNET/.libs \
+    -L../tinyNET/.libs \
+    -Wl,-rpath,../tinyHTTP/.libs \
+    -L../tinyHTTP/.libs \
+    -Wl,-rpath,../tinyIPSec/.libs \
+    -L../tinyIPSec/.libs \
+    -Wl,-rpath,../tinySMS/.libs \
+    -L../tinySMS/.libs \
+    -Wl,-rpath,../tinySDP/.libs \
+    -L../tinySDP/.libs \
+    -Wl,-rpath,../tinyMEDIA/.libs \
+    -L../tinyMEDIA/.libs \
+    -Wl,-rpath,../tinyDAV/.libs \
+    -L../tinyDAV/.libs \
+    -Wl,-rpath,../tinySIP/.libs \
+    -L../tinySIP/.libs \
 
 all: $(APP)
 
@@ -17,10 +35,11 @@ OBJS = \
 	options.o \
 	publish.o \
 	register.o \
-	subscribe.o
+	subscribe.o \
+    ipsec.o
 
 $(APP): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c $(INCLUDE) $(CFLAGS) $< -o $@

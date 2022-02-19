@@ -207,6 +207,7 @@ int tnet_dns_cache_clear(tnet_dns_ctx_t* ctx)
 */
 tnet_dns_response_t *tnet_dns_resolve(tnet_dns_ctx_t* ctx, const char* qname, tnet_dns_qclass_t qclass, tnet_dns_qtype_t qtype)
 {
+fprintf(stderr, "PHH: Resolving %s\n", qname);
 #if HAVE_DNS_H
     struct sockaddr_storage result;
     struct sockaddr *from;

@@ -289,7 +289,10 @@ int tsip_transport_msg_update(const tsip_transport_t* self, tsip_message_t *msg)
 
     /* === IPSec headers (Security-Client, Security-Verify, Sec-Agree ...) === */
     if(TNET_SOCKET_TYPE_IS_IPSEC(self->type)) {
+        fprintf(stderr, "PHH: This is an ipsec socket!\n");
         ret = tsip_transport_ipsec_updateMSG(TSIP_TRANSPORT_IPSEC(self), msg);
+    } else {
+        fprintf(stderr, "PHH: This is not an ipsec socket!\n");
     }
 
     /* === SigComp === */

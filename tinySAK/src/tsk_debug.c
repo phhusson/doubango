@@ -34,7 +34,7 @@ static tsk_debug_f tsk_debug_info_cb = tsk_null;
 static tsk_debug_f tsk_debug_warn_cb = tsk_null;
 static tsk_debug_f tsk_debug_error_cb = tsk_null;
 static tsk_debug_f tsk_debug_fatal_cb = tsk_null;
-static int tsk_debug_level = DEBUG_LEVEL;
+static int tsk_debug_level = DEBUG_LEVEL_INFO;
 
 /**@ingroup tsk_debug_group
 * Defines the callback data. Will be the @a arg parameter for the callback function.

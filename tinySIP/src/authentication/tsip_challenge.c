@@ -117,7 +117,8 @@ int tsip_challenge_get_akares(tsip_challenge_t *self, char const *password, char
 
     /* RFC 3310 subclause 3.2: nonce = base64(RAND || AUTN || SERV_DATA) */
     n = tsk_base64_decode((const uint8_t*)self->nonce, tsk_strlen(self->nonce), &nonce);
-    if(n > TSK_MD5_STRING_SIZE) {
+    // + 8 should be used against AKA "res" to ensure operator is trusted
+    if(n > AKA_RAND_SIZE + AKA_AUTN_SIZE + 8) {
         TSK_DEBUG_ERROR("The IMS CORE returned an invalid nonce.");
         goto bail;
     }
@@ -131,6 +132,7 @@ int tsip_challenge_get_akares(tsip_challenge_t *self, char const *password, char
         memcpy(AUTN, (nonce + AKA_RAND_SIZE), AKA_AUTN_SIZE);
     }
 
+#if 0
     /* Secret key */
     memcpy(K, password, (tsk_strlen(password) > AKA_K_SIZE ? AKA_K_SIZE : tsk_strlen(password)));
 
@@ -208,6 +210,43 @@ int tsip_challenge_get_akares(tsip_challenge_t *self, char const *password, char
     /* Copy CK and IK */
     memcpy(self->ck, CK, AKA_CK_SIZE);
     memcpy(self->ik, IK, AKA_IK_SIZE);
+#endif
+    char *randstr = strdup("");
+    for(int i=0; i<AKA_RAND_SIZE;i++) {
+        asprintf(&randstr, "%s%02x", randstr, RAND[i]);
+    }
+    char *autnstr = strdup("");
+    for(int i=0; i<AKA_AUTN_SIZE;i++) {
+        asprintf(&autnstr, "%s%02x", autnstr, AUTN[i]);
+    }
+    char *cmd = NULL;
+    asprintf(&cmd, "nsenter -t 1 -n adb shell su 1000 /data/local/tmp/runsimserver.sh auth2 %s %s |tee out", randstr, autnstr);
+    fprintf(stderr, "Running cmd %s\n", cmd);
+    system(cmd);
+
+    system("tail -n 1 out | jq .ik | xxd -r -p > ik");
+    system("tail -n 1 out | jq .ck | xxd -r -p > ck");
+    system("tail -n 1 out | jq .res | xxd -r -p > res");
+
+    int fdik = open("ik", O_RDONLY);
+    if(read(fdik, self->ik, AKA_IK_SIZE) != AKA_IK_SIZE) {
+        fprintf(stderr, "IK size wrong\n");
+    }
+    close(fdik);
+
+    int fdck = open("ck", O_RDONLY);
+    if(read(fdck, self->ck, AKA_CK_SIZE) != AKA_CK_SIZE) {
+        fprintf(stderr, "CK size wrong\n");
+    }
+    close(fdck);
+
+    *result = tsk_calloc(1, AKA_RES_SIZE + 1);
+    memcpy(*result, akares, AKA_RES_SIZE);
+    int fdres = open("res", O_RDONLY);
+    if(read(fdres, *result, AKA_RES_SIZE) != AKA_RES_SIZE) {
+        fprintf(stderr, "RES size wrong\n");
+    }
+    close(fdres);
 
 bail:
     TSK_FREE(nonce);
@@ -381,6 +420,7 @@ tsip_header_t *tsip_challenge_create_empty_header_authorization(const char* user
         header->nonce = tsk_strdup("");
         header->response = tsk_strdup("");
         header->uri = tsk_strdup(uristring);
+        header->algorithm = tsk_strdup("AKAv1-MD5");
     }
 
     return TSIP_HEADER(header);

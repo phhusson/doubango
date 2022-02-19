@@ -58,6 +58,7 @@ tsip_transport_ipsec_t* tsip_transport_ipsec_create(struct tsip_stack_s* stack, 
 int tsip_transport_ipsec_createTempSAs(tsip_transport_ipsec_t* self)
 {
     int ret = -1;
+    fprintf(stderr, "PHH: Entering %s\n", __FUNCTION__);
 
     /* Check */
     if (!self) {
@@ -120,7 +121,11 @@ int tsip_transport_ipsec_ensureTempSAs(tsip_transport_ipsec_t* self, const tsip_
 
     /* Already have temporary SAs ? */
     if(!self->asso_temporary) {
+        tsip_transport_ipsec_createTempSAs(self);
         TSK_DEBUG_ERROR("Cannot ensure temporary SAs (No tempSAs)");
+    }
+    if(!self->asso_temporary) {
+        TSK_DEBUG_ERROR("Cannot ensure temporary REAL SAs (No tempSAs)");
         ret = -2;
         goto bail;
     }
@@ -385,6 +390,7 @@ static tsk_object_t* tsip_transport_ipsec_ctor(tsk_object_t * self, va_list * ap
         tnet_socket_type_t type = va_arg(*app, tnet_socket_type_t);
         const char *description = va_arg(*app, const char*);
 
+fprintf(stderr, "PHH: ipsec ctor\n");
         /* init base */
         tsip_transport_init(TSIP_TRANSPORT(transport), type, stack, host, port, description);
     }

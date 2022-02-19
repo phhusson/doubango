@@ -315,11 +315,13 @@ int tsip_dialog_register_send_REGISTER(tsip_dialog_register_t *self, tsk_bool_t 
         */
         /*if(TSIP_DIALOG_GET_STACK(self)->enable_gsmarcs){
         	TSIP_HEADER_ADD_PARAM(request->Contact, "+g.oma.sip-im.large-message", 0);
-        	TSIP_HEADER_ADD_PARAM(request->Contact, "audio", 0);
         	TSIP_HEADER_ADD_PARAM(request->Contact, "video", 0);
         	TSIP_HEADER_ADD_PARAM(request->Contact, "+g.3gpp.cs-voice", 0);
-        	TSIP_HEADER_ADD_PARAM(request->Contact, "+g.3gpp.icsi-ref", TSIP_ICSI_QUOTED_MMTEL_PSVOICE);
         }*/
+
+        	TSIP_HEADER_ADD_PARAM(request->Contact, "+g.3gpp.icsi-ref", TSIP_ICSI_QUOTED_MMTEL_PSVOICE);
+        	TSIP_HEADER_ADD_PARAM(request->Contact, "+sip.instance", "\"<urn:gsma:imei:86687905-321566-0>\"");
+        	TSIP_HEADER_ADD_PARAM(request->Contact, "audio", 0);
 
         ///* mobility */
         //if(TSIP_DIALOG_GET_STACK(self)->mobility){
@@ -338,9 +340,9 @@ int tsip_dialog_register_send_REGISTER(tsip_dialog_register_t *self, tsk_bool_t 
 
         ///* 3GPP TS 24.341 subclause 5.3.2.2 */
         //if(TSIP_DIALOG_GET_STACK(self)->enable_3gppsms){
-        //	TSIP_HEADER_ADD_PARAM(request->Contact, "+g.3gpp.smsip", 0);
         //}
 
+        TSIP_HEADER_ADD_PARAM(request->Contact, "+g.3gpp.smsip", 0);
         /* 3GPP TS 24.229 - 5.1.1.2 Initial registration */
         if(TSIP_DIALOG(self)->state ==tsip_initial) {
             /*
@@ -367,9 +369,13 @@ int tsip_dialog_register_send_REGISTER(tsip_dialog_register_t *self, tsk_bool_t 
         }
 
         /* Create temorary SAs if initial register. */
+        fprintf(stderr, "PHH: In %s\n", __FUNCTION__);
         if(TSIP_DIALOG_GET_STACK(self)->security.secagree_mech) {
+            fprintf(stderr, "PHH: In %s secagree_mech\n", __FUNCTION__);
             if(tsk_striequals(TSIP_DIALOG_GET_STACK(self)->security.secagree_mech, "ipsec-3gpp")) {
+                fprintf(stderr, "PHH: In %s secagree_mech ipsec-3gpp\n", __FUNCTION__);
                 if(initial) {
+                    fprintf(stderr, "PHH: In %s secagree_mech ipsec-3gpp inital\n", __FUNCTION__);
                     tsip_transport_createTempSAs(TSIP_DIALOG_GET_STACK(self)->layer_transport);
                 }
                 else {

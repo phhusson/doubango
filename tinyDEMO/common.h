@@ -116,8 +116,8 @@ int session_hangup(tsip_ssession_id_t sid);
 
 tsip_action_handle_t* action_get_config(const opts_L_t* opts);
 
-const tsk_object_def_t *session_def_t;
-const tsk_object_def_t *ctx_def_t;
+extern const tsk_object_def_t *session_def_t;
+extern const tsk_object_def_t *ctx_def_t;
 
 _END_DECLS
 

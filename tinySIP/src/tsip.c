@@ -350,9 +350,10 @@ static int __tsip_stack_set(tsip_stack_t *self, va_list* app)
                 TSK_DEBUG_ERROR("%s not valid as transport or you're probably using deprecated function", TRANSPORT_STR);
                 return -1;
             }
+            fprintf(stderr, "PHH: Forcing ipsec mode1\n");
             if(ENABLED_BOOL) {
                 tsk_strupdate(&self->security.secagree_mech, "ipsec-3gpp");
-                TNET_SOCKET_TYPE_SET_IPSEC(self->network.proxy_cscf_type[t_idx]);
+                TNET_SOCKET_TYPE_SET_IPSEC(self->network.proxy_cscf_type[0]);
             }
             else {
                 TNET_SOCKET_TYPE_UNSET(self->network.proxy_cscf_type[t_idx], IPSEC);
@@ -692,10 +693,8 @@ int tsip_stack_start(tsip_stack_handle_t *self)
     /* === Transport type === */
     if(!tsk_strnullORempty(stack->security.secagree_mech)) {
         if(tsk_striequals(stack->security.secagree_mech, "ipsec-3gpp") && stack->security.enable_secagree_ipsec) {
-#if 0
-            TNET_SOCKET_TYPE_SET_IPSEC(stack->network.proxy_cscf_type);
-#endif
-            TSK_DEBUG_ERROR("Not implemented");
+            fprintf(stderr, "PHH: Forcing ipsec mode2\n");
+            TNET_SOCKET_TYPE_SET_IPSEC(stack->network.proxy_cscf_type[0]);
         }
         //else if if(tsk_striquals(stack->security.secagree_mech, "ipsec-ike"))
     }
@@ -704,6 +703,7 @@ int tsip_stack_start(tsip_stack_handle_t *self)
         if(!TNET_SOCKET_TYPE_IS_VALID(tx_values[t_idx])) {
             continue;
         }
+        fprintf(stderr, "Trying transport idx %d, with value %x\n", t_idx, tx_values[t_idx]);
         /* === Use DNS NAPTR+SRV for the P-CSCF discovery if we are in client mode === */
         if(TSIP_STACK_MODE_IS_CLIENT(stack)) {
             if(tsk_strnullORempty(stack->network.proxy_cscf[t_idx]) || (stack->network.discovery_dhcp || stack->network.discovery_naptr)) {

@@ -400,6 +400,11 @@ int stack_config(const opts_L_t* opts)
                              TSIP_STACK_SET_NULL());
     }
 
+    tsip_stack_set(ctx->stack,
+                           TSIP_STACK_SET_SECAGREE_IPSEC(1),
+                           //TSIP_STACK_SET_IPSEC_PARAMS("hmac-sha-1-96", "aes-cbc", "trans", "esp"),
+                           TSIP_STACK_SET_NULL());
+
     return ret;
 }
 

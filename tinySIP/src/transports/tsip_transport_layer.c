@@ -1055,6 +1055,7 @@ int tsip_transport_layer_add(tsip_transport_layer_t* self, const char* local_hos
 {
     // FIXME: CHECK IF already exist
     if(self && description) {
+        fprintf(stderr, "PHH: %s socket is ipsec %d\n",  __FUNCTION__, TNET_SOCKET_TYPE_IS_IPSEC(type));
         tsip_transport_t *transport =
             (TNET_SOCKET_TYPE_IS_IPSEC(type) || self->stack->security.enable_secagree_ipsec) ?
             (tsip_transport_t *)tsip_transport_ipsec_create((tsip_stack_t*)self->stack, local_host, local_port, type, description) /* IPSec is a special case. All other are ok. */
@@ -1111,6 +1112,7 @@ int tsip_transport_layer_send(const tsip_transport_layer_t* self, const char *br
 int tsip_transport_createTempSAs(const tsip_transport_layer_t *self)
 {
     int ret = -1;
+    fprintf(stderr, "PHH: Entering %s\n", __FUNCTION__);
 
     tsk_list_item_t *item;
     tsip_transport_t* transport;

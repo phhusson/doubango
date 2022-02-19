@@ -136,8 +136,8 @@ opt_t* opt_create(opt_type_t, lv_t, const char*);
 const opt_t* opt_get_by_type(const opts_L_t* , opt_type_t);
 #define opt_create_null() opt_create(opt_none, lv_none, tsk_null)
 
-const tsk_object_def_t *opt_def_t;
-const tsk_object_def_t *cmd_def_t;
+extern const tsk_object_def_t *opt_def_t;
+extern const tsk_object_def_t *cmd_def_t;
 
 _END_DECLS
 

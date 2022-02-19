@@ -45,9 +45,13 @@ int insert(char* dest, tsk_size_t index, tsk_size_t dest_size, char* src, tsk_si
 int update_param(const char* , const char* );
 int execute(const cmd_t* );
 
+extern void phh_ipsec_init(void);
+
 /* === entry point === */
 int main(int argc, char** argv)
 {
+    phh_ipsec_init();
+
     char cmdbuf[4096];
     tsk_buffer_t* buffer = tsk_null;
     cmd_t* cmd = tsk_null;
@@ -68,7 +72,7 @@ int main(int argc, char** argv)
     tdav_init();
 
     /* Print Usage */
-    //cmd_print_help();
+    cmd_print_help();
 
     /* create user's ctx */
     if(!(ctx = ctx_create()) || !ctx->stack) {
